@@ -29,14 +29,6 @@ public class HDSkinHandler {
 	public static void updateSkins(World world){
 		List<EntityPlayer> players = world.playerEntities;
 		for(EntityPlayer p : players){
-			
-
-			try {
-				
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 
 			
 		if(p.skinUrl!="http://home.maemesoft.wo.tc:25564/MinecraftSkins/" + p.username + ".png"){

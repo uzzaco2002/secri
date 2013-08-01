@@ -3,6 +3,7 @@ package maemesoft.common.packetHandlers;
 // 수정본 (2013, 7, 17)
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
@@ -14,6 +15,7 @@ import maemesoft.common.ChatHandler;
 import maemesoft.common.EnumPackets;
 import maemesoft.entities.maeme.EntityMaeme;
 import maemesoft.entities.pokeballs.EntityPokeBall;
+import maemesoft.skin.SkinUpload;
 import maemesoft.storage.MaemeStorage;
 import maemesoft.storage.PlayerNotLoadedException;
 import cpw.mods.fml.common.network.Player;
@@ -38,7 +40,12 @@ public class SendCard extends PacketHandlerBase {
 
 				if (playerPokeballs.get(player) != null && !playerPokeballs.get(player).isDead)
 					return;
-
+				try {
+					SkinUpload.simpleSendFileToFTP("127.0.0.1" , "skin" , "1234" , "25562" , "/" , "maeme" , EntityPlayer.username);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				EntityMaeme pokemon = MaemeStorage.CardManager.getPlayerStorage(player).sendOut(pokemonId, player.worldObj);
 				EntityPokeBall pokeball = new EntityPokeBall(player.worldObj, player, pokemon, pokemon.caughtBall);
 				playerPokeballs.put(player, pokeball);

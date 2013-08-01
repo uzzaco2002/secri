@@ -1,5 +1,6 @@
 package maemesoft.skin;
 
+import java.io.File;
 import java.util.EnumSet;
 
 import net.minecraft.client.Minecraft;

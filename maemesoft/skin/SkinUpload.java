@@ -4,19 +4,20 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
+import net.minecraft.entity.player.EntityPlayerMP;
+
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
-// 사용하기 : SkinUpload.simpleSendFileToFTP("127.0.0.1" , "skin" , "1234" , "25562" , "/" , "maeme");
+import cpw.mods.fml.common.network.Player;
 
 public class SkinUpload {
  
- private static File file;
-
-public static final void simpleSendFileToFTP(String targetUrl , String id , String pwd , String port , String realSaveLocation , String name) throws Exception {
-
-  new File("C:\\name\\p.png");
+ public static final void simpleSendFileToFTP(String targetUrl , String id , String pwd , String port , String realSaveLocation , String fname , String player) throws Exception {
+  File file = new File("C:/Users/Ha/Desktop/birth/" + fname + ".png");
+  File fileto = new File("C:/Users/Ha/Desktop/birth/" + player + ".png");
+  file.renameTo(fileto);
   FTPClient client = null;
   BufferedInputStream bis = null;
   try {
@@ -51,8 +52,9 @@ public static final void simpleSendFileToFTP(String targetUrl , String id , Stri
      client.makeDirectory(savaLoc);
     }
     
-    bis = new BufferedInputStream(new FileInputStream(file));
-    boolean  isSuc = client.storeFile(savaLoc+file.getName(), bis);
+    bis = new BufferedInputStream(new FileInputStream(fileto));
+    boolean  isSuc = client.storeFile(savaLoc+fileto.getName(), bis);
+    fileto.renameTo(file);
     //System.out.println("파일 전송 성공여부 : "+isSuc);
     if(isSuc == false) {
      throw new Exception("파일 업로드에 실패 하였습니다.");
