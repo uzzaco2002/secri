@@ -1,0 +1,165 @@
+package maemesoft.storage;
+
+//수정일 : 7/10 11:25 (현재 인벤토리 오류 수정중)
+
+import java.util.Iterator;
+import java.util.Random;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import maemesoft.common.ChatHandler;
+import maemesoft.entities.maeme.EntityMaeme;
+
+public class PlayerComputerStorage {
+	private ComputerBox[] storageBoxes = new ComputerBox[boxCount];
+	public static final int boxCount = 8;
+	private NBTTagCompound data = new NBTTagCompound();
+	public EntityPlayer player;
+
+	public PlayerComputerStorage(EntityPlayer player) {
+		this.player = player;
+		for (int i = 0; i < boxCount; i++) {
+			storageBoxes[i] = new ComputerBox(this, i);
+		}
+	}
+
+	public void addToComputer(EntityMaeme p) {
+		for (ComputerBox c : storageBoxes) {
+			if (c.hasSpace()) {
+				c.add(p, getId());
+				return;
+			}
+		}
+		ChatHandler.sendChat(p.getOwner(), "You have no space left in your computer!");
+	}
+
+	public int getId() {
+		int id = new Random().nextInt(1000000);
+		boolean isUsed = false;
+		do {
+			isUsed = false;
+			for (ComputerBox c : storageBoxes) {
+				for (NBTTagCompound nbt : c.getStoredPokemon()) {
+					if (nbt != null) {
+						if (nbt.getInteger("pixelmonID") == id) {
+							id = new Random().nextInt(1000000);
+							isUsed = true;
+						}
+					}
+				}
+			}
+			for (ComputerBox c : storageBoxes) {
+				for (int i = 0; i < ComputerBox.boxLimit; i++) {
+					if (c.getStoredPokemon()[i] != null) {
+						if (c.getStoredPokemon()[i].getInteger("pixelmonID") == id) {
+							id = new Random().nextInt(1000000);
+							isUsed = true;
+						}
+					}
+				}
+			}
+		} while (isUsed);
+		return id;
+	}
+
+	public void changePokemon(int box, int boxPos, NBTTagCompound n) {
+		if (n != null) {
+			n.setInteger("BoxNumber", box);
+			n.setInteger("PixelmonOrder", boxPos);
+		}
+		ComputerBox c = storageBoxes[box];
+		c.changePokemon(boxPos, n);
+	}
+
+	public void addToBox(int originalBox, NBTTagCompound n) {
+		ComputerBox c = storageBoxes[originalBox];
+		if (n != null) {
+			n.setInteger("BoxNumber", originalBox);
+		}
+		c.addToFirstSpace(n);
+	}
+
+	public ComputerBox getBox(int boxNumber) {
+		return storageBoxes[boxNumber];
+	}
+
+	public ComputerBox getBoxFromPosition(int pos) {
+		for (int i = 0; i < boxCount; i++) {
+			if (storageBoxes[i].position == pos)
+				return storageBoxes[i];
+		}
+		return null;
+	}
+
+	public ComputerBox[] getBoxList() {
+		return storageBoxes;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void readFromNBT(NBTTagCompound var1) {
+		Iterator<NBTTagCompound> i = var1.getTags().iterator();
+
+		while (i.hasNext()) {
+			NBTTagCompound tag = i.next();
+			ComputerBox c = new ComputerBox(this, Integer.parseInt(tag.getName()));
+			c.load(tag);
+			storageBoxes[Integer.parseInt(tag.getName())] = c;
+		}
+	}
+
+	public void writeToNBT(NBTTagCompound n) {
+		for (int i = 0; i < storageBoxes.length; i++) {
+			ComputerBox c = storageBoxes[i];
+			NBTTagCompound cTag = new NBTTagCompound();
+			c.save(cTag);
+			n.setCompoundTag("" + c.position, cTag);
+		}
+	}
+
+	public boolean hasChanges() {
+		for (ComputerBox c : storageBoxes) {
+			if (c.hasChanged)
+				return true;
+		}
+		return false;
+	}
+
+	public boolean contains(int pokemonID) {
+		for (ComputerBox b : storageBoxes) {
+			if (b.contains(pokemonID))
+				return true;
+		}
+		return false;
+	}
+
+	public EntityMaeme getPokemonEntity(int pokemonID) {
+		for (ComputerBox b : storageBoxes) {
+			if (b.contains(pokemonID))
+				return b.getPokemonEntity(pokemonID);
+		}
+		return null;
+	}
+
+	public void updatePokemonEntry(EntityMaeme p) {
+		for (ComputerBox b : storageBoxes) {
+			if (b.contains(p.getPokemonId()))
+				b.updatePokemonEntry(p);
+		}
+	}
+
+	public NBTTagCompound getPokemonNBT(int id) {
+		for (ComputerBox b : storageBoxes) {
+			if (b.contains(id))
+				return b.getPokemonNBT(id);
+		}
+		return null;
+	}
+
+	public void updatePokemonNBT(int id, NBTTagCompound nbt) {
+		for (ComputerBox b : storageBoxes) {
+			if (b.contains(id))
+				b.updatePokemonNBT(id, nbt);
+		}
+	}
+
+}
