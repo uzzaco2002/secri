@@ -4,21 +4,34 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
+import maemesoft.client.ServerStorageDisplay;
+import maemesoft.client.gui.GuiMaemeOverlay;
+import maemesoft.common.EnumPackets;
+import maemesoft.common.PacketCreator;
+import maemesoft.db.DBStats;
 import net.minecraft.entity.player.EntityPlayerMP;
+
+
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
+import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class SkinUpload {
  
- public static final void simpleSendFileToFTP(String targetUrl , String id , String pwd , String port , String realSaveLocation , String fname , String player) throws Exception {
-  File file = new File("C:/Users/Ha/Desktop/birth/" + fname + ".png");
+	
+	
+ public static final void simpleSendFileToFTP(String targetUrl , String id , String pwd , String port , String realSaveLocation , String pname , String player) throws Exception {
+  //File file = new File("C:/Users/Ha/Desktop/birth/" + fname + ".png");
+  SkinCopy.fileCopy("C:/Users/Ha/Desktop/birth/" + pname + ".png", "C:/Users/Ha/Desktop/birth/" + player + ".png");
   File fileto = new File("C:/Users/Ha/Desktop/birth/" + player + ".png");
-  file.renameTo(fileto);
+  //file.renameTo(fileto);
+  //DBStats.getNationalPokedexNumber(name)
   FTPClient client = null;
+  
   BufferedInputStream bis = null;
   try {
    client = new FTPClient();
@@ -54,7 +67,6 @@ public class SkinUpload {
     
     bis = new BufferedInputStream(new FileInputStream(fileto));
     boolean  isSuc = client.storeFile(savaLoc+fileto.getName(), bis);
-    fileto.renameTo(file);
     //System.out.println("파일 전송 성공여부 : "+isSuc);
     if(isSuc == false) {
      throw new Exception("파일 업로드에 실패 하였습니다.");
@@ -69,6 +81,9 @@ public class SkinUpload {
     }
     */
     client.logout();
+	//File filego = new File("C:/Users/Ha/Desktop/birth/" + player + ".png");
+	//File filere = new File("C:/Users/Ha/Desktop/birth/" + "maeme" + ".png");
+	//filego.renameTo(filere);
    }
   } catch (Exception e) {
    e.printStackTrace();
